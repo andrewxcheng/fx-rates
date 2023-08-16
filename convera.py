@@ -19,17 +19,17 @@ def start_up_convera(country_code):
 
     #following section opens Convera with chrome
     driver = Chrome()
-    driver.get("https://students.convera.com/")
+    driver.get("https://students.convera.com/") #uses Selenium to open the Convera home webpage
 
     #following section obtains a list of cookies from Convera
-    cookie = {l["name"]: l["value"] for l in driver.get_cookies()}
+    cookie = {l["name"]: l["value"] for l in driver.get_cookies()} #from the Convera page, takes the cookies to be used as keys for the following pages
 
     #following section stores the required cookies to access the next page
-    ak_bmsc = cookie["ak_bmsc"]
-    YJSESSIONID = cookie["JSESSIONID"]
+    ak_bmsc = cookie["ak_bmsc"] #obtains the ak_bmsc cookie, which is required to query the other pages
+    YJSESSIONID = cookie["JSESSIONID"] #obtains the JSESSIONID cookie, which is required to query the other pages
 
     #following section opens the next page of Convera with the country code
-    url_school = "https://students.convera.com/geo-buyer/services/institution/"+country_code
+    url_school = "https://students.convera.com/geo-buyer/services/institution/"+country_code #sets the next query's webpage to be the country-page, to obtain the list of schools for a given country
     headers_school = {"Accept": "application/json, text/plain, */*",
                       "Accept-Encoding": "gzip, deflate, br",
                       "Accept-Language": "en-US,en;q=0.9",
@@ -45,8 +45,8 @@ def start_up_convera(country_code):
                     "Referer":"https://students.convera.com/"}
 
     #loads the list of available schools as a Python dictionary
-    school_json = requests.get(url_school,headers=headers_school).text
-    school_dict = json.loads(school_json)["sellers"]
+    school_json = requests.get(url_school,headers=headers_school).text #obtains the json file of schools from the website
+    school_dict = json.loads(school_json)["sellers"] #loads in the json file as a Python dictionary
 
     #creates list of schools
     school_list = []
@@ -262,7 +262,4 @@ for x in search_results:
 final_search_school = search_results[int(input("Enter the number of the corresponding school: "))-1]
 
 #prints the table output
-print(find_school(country_code,final_search_school))
-final_search_school = search_results[int(input("Enter the number selection: "))-1]
-
 print(find_school(country_code,final_search_school))
