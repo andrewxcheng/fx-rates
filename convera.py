@@ -208,30 +208,29 @@ def find_school(country_code,school_name):
 
         #following section obtains all currency quotes for the ccy that we are looking for in this iteration of the loop
         response = requests.get(urlX,headers=headersX).text
-        response_dict = json.loads(response)["currencyQuoteList"]        
-        
-        for ccycode in response_dict: #this loops through every currency in the list of currency offers
-            avail = 0 
-            
-            #following section attempts to get the market rate from Yahoo Finance
-            try: #program tries to pull rate by using direct CCY to CCY pair
-                yfinancepull = yf.download(tickers = (baseccys[country_code]+country_dict[country_code][country]+'=X') ,period ='1d', interval = '1m').tail(1)
-                mktvalue = yfinancepull.iloc[0,yfinancepull.columns.get_loc("Close")]
-            except: #sometimes, CCY to CCY pair is not a market traded currency, and we must go through USD to derive an exchange rate
-                yfinancepull = yf.download(tickers = ("USD"+country_dict[country_code][country]+'=X') ,period ='1d', interval = '1m').tail(1)
-                basetousd = yfinancepull.iloc[0,yfinancepull.columns.get_loc("Close")]
-                yfinancepull = yf.download(tickers = ("USD"+baseccys[country_code]+'=X') ,period ='1d', interval = '1m').tail(1)
-                usdtomkt = yfinancepull.iloc[0,yfinancepull.columns.get_loc("Close")]
-                mktvalue = basetousd/usdtomkt
-            
-            #following section adds the currency pair to the table
-            if ccycode["currencyCode"] == country_dict[country_code][country]:
-                compvalue = ccycode["initiateQuoteResponseList"][0]["buyerAmount"]/500
-                margin = ((compvalue/mktvalue)-1)
-                df.loc[len(df.index)] = [ccycode["currencyCode"], ccycode["initiateQuoteResponseList"][0]["buyerAmount"], round(mktvalue,3), round(compvalue,3), (str(round(margin*100,2))+"%"), ccycode["initiateQuoteResponseList"][0]["paymentType"]["description"]]
-                print("Completed "+country_dict[country_code][country])
-                avail = 1
-                break
+        response_dict = json.loads(response)["currencyQuoteList"]   
+        print (response_dict)
+        avail = 0 
+        for ccycode in response_dict: #this loops through every curr1ency in the list of currency offers
+            for quote in ccycode['initiateQuoteResponseList']:
+                #following section attempts to get the market rate from Yahoo Finance
+                try: #program tries to pull rate by using direct CCY to CCY pair
+                    yfinancepull = yf.download(tickers = (baseccys[country_code]+country_dict[country_code][country]+'=X') ,period ='1d', interval = '1m').tail(1)
+                    mktvalue = yfinancepull.iloc[0,yfinancepull.columns.get_loc("Close")]
+                except: #sometimes, CCY to CCY pair is not a market traded currency, and we must go through USD to derive an exchange rate
+                    yfinancepull = yf.download(tickers = ("USD"+country_dict[country_code][country]+'=X') ,period ='1d', interval = '1m').tail(1)
+                    basetousd = yfinancepull.iloc[0,yfinancepull.columns.get_loc("Close")]
+                    yfinancepull = yf.download(tickers = ("USD"+baseccys[country_code]+'=X') ,period ='1d', interval = '1m').tail(1)
+                    usdtomkt = yfinancepull.iloc[0,yfinancepull.columns.get_loc("Close")]
+                    mktvalue = basetousd/usdtomkt
+                
+                #following section adds the currency pair to the table
+                if quote["buyerCurrency"] == country_dict[country_code][country]:
+                    compvalue = quote["buyerAmount"]/500
+                    margin = ((compvalue/mktvalue)-1)
+                    df.loc[len(df.index)] = [quote["buyerCurrency"], quote["buyerAmount"], round(mktvalue,3), round(compvalue,3), (str(round(margin*100,2))+"%"), quote["paymentType"]["description"]]
+                    print("Completed "+country_dict[country_code][country])
+                    avail = 1
         
         #if no rates are available, then fill a row with NAs
         if avail == 0:
@@ -247,7 +246,7 @@ country_options = list(baseccys.keys())
 for x in country_options:
     print (counter, x)
     counter += 1
-country_code = country_options[int(input("Enter the number selection: "))-1]
+country_code = country_options[int(input("Enter the number of the corresponding country: "))-1]
 
 #runs the school search function
 search_school = input("Enter a school: ")
@@ -255,11 +254,15 @@ all_schools_list = start_up_convera(country_code)
 counter = 1
 search_results = []
 for x in all_schools_list:
-    if search_school in x:
+    if search_school.upper() in x.upper():
         search_results.append(x)
 for x in search_results:
     print (counter, x)
     counter += 1
+final_search_school = search_results[int(input("Enter the number of the corresponding school: "))-1]
+
+#prints the table output
+print(find_school(country_code,final_search_school))
 final_search_school = search_results[int(input("Enter the number selection: "))-1]
 
 print(find_school(country_code,final_search_school))
