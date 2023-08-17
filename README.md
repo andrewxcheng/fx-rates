@@ -9,7 +9,7 @@ Once the list of available institutions is created, the school can be selected. 
 Convera then provides the option to select a currency and the payment amount.
 ### Step 4: Comparing the FX rates
 We can then compare the FX rates by calculating the implied FX rate and then marking the baked-in spread.
-## Framework
+## Program Framework
 The Convera tool is composed of two input/output functions.
 
 The first function has the following structure:
@@ -30,3 +30,17 @@ Take the following process as an example of how keys can form a chain of pages:
 - Site D: CookieC is required to access this site. This site then contains the information that we are aiming to scrape.
 
 Therefore, to access Site D and its information, we need to start at Site A and go through the chain of sites to finally access Site D. It is impossible to access Site D directly, as it requires a cookie from the previous site, which requires a cookie from the previous site, and so on. 
+
+In Convera's case, the two tokens that act as these keys to create the chain are called:
+- AWSALBTGCORS
+- AWSALBCORS
+
+These need to be taken from a previous page and then fed into the HTML headers of the following page to access the next page. 
+## Using Selenium
+To access all the pages, Convera requires a session ID. This token will expire in a short period, so the program must obtain a new token from Convera's website each time. Selenium is used to retrieve this initial session ID token. After it is retrieved, the rest of the data scraping can be processed using the requests package.
+
+The two tokens that are required to access the database are:
+- JSESSIONID
+- ak_bmsc
+
+These are taken from the initial Selenium scrape, and then stored as variables to use in later requests made. 
