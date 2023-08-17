@@ -10,7 +10,17 @@ Convera then provides the option to select a currency and the payment amount.
 ### Step 4: Comparing the FX rates
 We can then compare the FX rates by calculating the implied FX rate and then marking the baked-in spread.
 ## Framework
+The Convera tool is composed of two input/output functions.
 
+The first function has the following structure:
+- Input: School country (ex. USA)
+- Output: Available schools for that country (ex. Cornell, Harvard, Yale...)
+
+After this function is run, the user can then select a school from the list that was just generated, going to the second function:
+- Input: School country, school name
+- Output: FX rates for a desired list of currencies
+
+This second function is what provides a dataframe with all the FX rates. This dataframe can then be printed or exported as a spreadsheet.
 ## Managing Cookies
 To navigate between the pages, Convera uses request and response cookies. These cookies effectively serve as keys to access the next webpage, creating a chain of pages.
 Take the following process as an example of how keys can form a chain of pages:
