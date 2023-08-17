@@ -15,6 +15,7 @@ The Convera tool is composed of two input/output functions.
 The first function has the following structure:
 - Input: School country (ex. USA)
 - Output: Available schools for that country (ex. Cornell, Harvard, Yale...)
+<img width="529" alt="image" src="https://github.com/andrewxcheng/fx-rates/assets/59624076/73af79ad-9922-470d-9d43-cf4bca9610e1">
 
 After this function is run, the user can then select a school from the list that was just generated, going to the second function:
 - Input: School country, school name
